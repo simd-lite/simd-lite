@@ -8,7 +8,6 @@ edition = "2018"
 
 [dependencies]
 
-[build-dependencies]
-proc-macro2 = { version = "0.4", features = ["nightly"] }
-quote = "0.6"
-syn = { version = "0.15", features = ["full"] }
+[dev-dependencies]
+simd-test-macro = {path = "simd-test-macro"}
+assert-instr-macro = {path = "assert-instr-macro"}

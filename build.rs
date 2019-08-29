@@ -332,7 +332,7 @@ fn gen_test(
 ) -> String {
     let mut test = format!(
         r#"
-    #[simd_test(enable = "neon")]
+    // FIXME: #[simd_test(enable = "neon")]
     unsafe fn test_{}() {{
 "#,
         name,
@@ -467,8 +467,13 @@ fn main() -> io::Result<()> {
     let mut out_arm = String::from(
         r#"
 use crate::arm::*;
+#[cfg(target_arch = "aarch64")]
+use std::arch::aarch64::*;
+#[cfg(target_arch = "aarch64")]
+use crate::aarch64::*;
+use crate::simd_llvm::*;
 #[cfg(test)]
-use stdarch_test::assert_instr;
+use assert_instr_macro::assert_instr;
 "#,
     );
     let mut tests_arm = String::from(
@@ -476,10 +481,15 @@ use stdarch_test::assert_instr;
 #[cfg(test)]
 #[allow(overflowing_literals)]
 mod test {
+    use std::arch::arm::*;
     use crate::arm::*;
-    use crate::simd::*;
+    #[cfg(target_arch = "aarch64")]
+    use std::arch::aarch64::*;
+    #[cfg(target_arch = "aarch64")]
+    use crate::aarch64::*;
     use std::mem::transmute;
-    use stdarch_test::simd_test;
+    use simd_test_macro::simd_test;
+    use std::arch::simd::*;
 "#,
     );
     //
@@ -488,18 +498,21 @@ mod test {
     let mut out_aarch64 = String::from(
         r#"
 use crate::aarch64::*;
+use std::arch::aarch64::*;
+use crate::simd_llvm::*;
 #[cfg(test)]
-use stdarch_test::assert_instr;
+use assert_instr_macro::assert_instr;
 "#,
     );
     let mut tests_aarch64 = String::from(
         r#"
 #[cfg(test)]
 mod test {
+    use std::arch::aarch64::*;
     use crate::aarch64::*;
-    use crate::core_arch::simd::*;
     use std::mem::transmute;
-    use stdarch_test::simd_test;
+    use simd_test_macro::simd_test;
+    use std::arch::simd::*;
 "#,
     );
 
