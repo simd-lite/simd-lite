@@ -343,13 +343,7 @@ pub unsafe fn {}(a: {}, b: {}) -> {} {{
         current_comment, current_aarch64, name, in_t, in_t, out_t, ext_c, current_fn,
     );
 
-    let test = gen_test(
-        name,
-        &in_t,
-        &out_t,
-        current_tests,
-        type_len(in_t),
-    );
+    let test = gen_test(name, &in_t, &out_t, current_tests, type_len(in_t));
     (function, test)
 }
 
@@ -466,13 +460,7 @@ pub unsafe fn {}(a: {}, b: {}) -> {} {{
 "#,
         current_comment, current_arm, current_aarch64, name, in_t, in_t, out_t, ext_c, current_fn,
     );
-    let test = gen_test(
-        name,
-        &in_t,
-        &out_t,
-        current_tests,
-        type_len(in_t),
-    );
+    let test = gen_test(name, &in_t, &out_t, current_tests, type_len(in_t));
 
     (function, test)
 }
