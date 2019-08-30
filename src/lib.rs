@@ -41,6 +41,11 @@ pub mod arm;
 mod simd;
 mod simd_llvm;
 
+pub trait NeonInit {
+    type From;
+    fn new(input: Self::From) -> Self;
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
