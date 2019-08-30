@@ -65,6 +65,24 @@ impl_cmp_arm!(float64x1_t, f64, 1);
 #[cfg(target_arch = "aarch64")]
 impl_cmp_arm!(float64x2_t, f64, 2);
 
+#[allow(improper_ctypes)]
+extern "C" {
+    //uint32x2_t vqmovn_u64 (uint64x2_t a)
+    #[cfg_attr(target_arch = "arm", link_name = "llvm.arm.neon.vqmovnu.v2i32")]
+    #[cfg_attr(target_arch = "aarch64", link_name = "llvm.aarch64.neon.uqxtn.v2i32")]
+    fn vqmovn_u64_(a: uint64x2_t) -> uint32x2_t;
+}
+
+/// Unsigned saturating extract narrow.
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(all(test, target_arch = "arm"), assert_instr(vqmovnu))]
+#[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(uqxtn))]
+pub unsafe fn vqmovn_u64(a: uint64x2_t) -> uint32x2_t {
+    vqmovn_u64_(a)
+}
+
 /// Move vector element to general-purpose register
 #[inline]
 #[target_feature(enable = "neon")]
@@ -517,6 +535,17 @@ pub unsafe fn vld1q_u8(addr: *const u8) -> uint8x16_t {
     ptr::read(addr as *const uint8x16_t)
 }
 
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(cmtst))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vtstq_u8(a: uint8x16_t, b: uint8x16_t) -> uint8x16_t {
+    vcgtq_u8(vandq_u8(a, b), vdupq_n_u8(0))
+}
+
 #[cfg(test)]
 mod tests {
     #[cfg(target_arch = "aarch64")]
@@ -529,6 +558,41 @@ mod tests {
     #[cfg(target_arch = "arm")]
     use std::arch::arm::*;
     use std::mem::transmute;
+
+    //#[simd_test(enable = "neon")]
+    #[test]
+    fn test_vtstq_u8() {
+        unsafe {
+            let a: [u8; 16] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+            let b: [u8; 16] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+            let e: [u8; 16] = [
+                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFF, 0xFF,
+            ];
+            let r = vtstq_u8(transmute(a), transmute(b));
+            assert!(cmp_arm(r, transmute(e)));
+            let a: [u8; 16] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+            let b: [u8; 16] = [0, 0, 1, 4, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+            let e: [u8; 16] = [
+                0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFF,
+            ];
+            let r = vtstq_u8(transmute(a), transmute(b));
+            assert!(cmp_arm(r, transmute(e)));
+        }
+    }
+
+    //#[simd_test(enable = "neon")]
+    #[test]
+    fn test_vqmovn_u64() {
+        unsafe {
+            let a: [u64; 2] = [1, 2];
+            let e: [u32; 2] = [1, 2];
+            let r = vqmovn_u64(transmute(a));
+            assert!(cmp_arm(r, transmute(e)));
+        }
+    }
+
     //#[simd_test(enable = "neon")]
     #[test]
     fn test_vld1q_s8() {
