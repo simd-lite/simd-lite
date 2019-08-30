@@ -137,6 +137,36 @@ fn type_to_global_type(t: &str) -> &str {
     }
 }
 
+fn type_to_native_type(t: &str) -> &str {
+    match t {
+        "int8x8_t" => "i8",
+        "int8x16_t" => "i8",
+        "int16x4_t" => "i16",
+        "int16x8_t" => "i16",
+        "int32x2_t" => "i32",
+        "int32x4_t" => "i32",
+        "int64x1_t" => "i64",
+        "int64x2_t" => "i64",
+        "uint8x8_t" => "u8",
+        "uint8x16_t" => "u8",
+        "uint16x4_t" => "u16",
+        "uint16x8_t" => "u16",
+        "uint32x2_t" => "u32",
+        "uint32x4_t" => "u32",
+        "uint64x1_t" => "u64",
+        "uint64x2_t" => "u64",
+        "float16x4_t" => "f16",
+        "float16x8_t" => "f16",
+        "float32x2_t" => "f32",
+        "float32x4_t" => "f32",
+        "float64x1_t" => "f64",
+        "float64x2_t" => "f64",
+        "poly64x1_t" => "i64",
+        "poly64x2_t" => "i64",
+        _ => panic!("unknown type: {}", t),
+    }
+}
+
 fn type_to_ext(t: &str) -> &str {
     match t {
         "int8x8_t" => "v8i8",
@@ -174,12 +204,12 @@ fn values(t: &str, vs: &[String]) -> String {
         format!(": {} = {}", t, vs[0])
     } else {
         format!(
-            ": {} = {}::new({})",
-            t,
+            ": {} = transmute([{}])",
             t,
             vs.iter()
-                .map(|v| map_val(t, v))
-                .collect::<Vec<&str>>()
+                .map(|v| map_val(type_to_global_type(t), v))
+                .map(|v| format!("{}{}", v, type_to_native_type(t)))
+                .collect::<Vec<String>>()
                 .join(", ")
         )
     }
@@ -195,8 +225,8 @@ fn max_val(t: &str) -> &'static str {
         "i16" => "0x7F_FF",
         "i32" => "0x7F_FF_FF_FF",
         "i64" => "0x7F_FF_FF_FF_FF_FF_FF_FF",
-        "f32" => "3.40282347e+38_f32",
-        "f64" => "1.7976931348623157e+308_f64",
+        "f32" => "3.40282347e+38",
+        "f64" => "1.7976931348623157e+308",
         _ => panic!("No TRUE for type {}", t),
     }
 }
@@ -207,12 +237,12 @@ fn min_val(t: &str) -> &'static str {
         "u16" => "0",
         "u32" => "0",
         "u64" => "0",
-        "i8x" => "-128i8",
-        "i16" => "-32768i16",
-        "i32" => "-2147483648i32",
-        "i64" => "-9223372036854775808i64",
-        "f32" => "-3.40282347e+38_f32",
-        "f64" => "-1.7976931348623157e+308_f64",
+        "i8x" => "-128",
+        "i16" => "-32768",
+        "i32" => "-2147483648",
+        "i64" => "-9223372036854775808",
+        "f32" => "-3.40282347e+38",
+        "f64" => "-1.7976931348623157e+308",
         _ => panic!("No TRUE for type {}", t),
     }
 }
@@ -315,8 +345,8 @@ pub unsafe fn {}(a: {}, b: {}) -> {} {{
 
     let test = gen_test(
         name,
-        &globla_t,
-        &globla_ret_t,
+        &in_t,
+        &out_t,
         current_tests,
         type_len(in_t),
     );
@@ -325,15 +355,16 @@ pub unsafe fn {}(a: {}, b: {}) -> {} {{
 
 fn gen_test(
     name: &str,
-    globla_t: &str,
-    globla_ret_t: &str,
+    in_t: &str,
+    out_t: &str,
     current_tests: &[(Vec<String>, Vec<String>, Vec<String>)],
     len: usize,
 ) -> String {
     let mut test = format!(
         r#"
     // FIXME: #[simd_test(enable = "neon")]
-    unsafe fn test_{}() {{
+    #[test]
+    fn test_{}() {{unsafe {{
 "#,
         name,
     );
@@ -347,17 +378,17 @@ fn gen_test(
         let b{};
         let e{};
         let r: {} = transmute({}(transmute(a), transmute(b)));
-        assert_eq!(r, e);
+        assert!(cmp_arm(r, e));
 "#,
-            values(globla_t, &a),
-            values(globla_t, &b),
-            values(globla_ret_t, &e),
-            globla_ret_t,
+            values(in_t, &a),
+            values(in_t, &b),
+            values(out_t, &e),
+            out_t,
             name
         );
         test.push_str(&t);
     }
-    test.push_str("    }\n");
+    test.push_str("    }}\n");
     test
 }
 
@@ -437,8 +468,8 @@ pub unsafe fn {}(a: {}, b: {}) -> {} {{
     );
     let test = gen_test(
         name,
-        &globla_t,
-        &globla_ret_t,
+        &in_t,
+        &out_t,
         current_tests,
         type_len(in_t),
     );
@@ -481,15 +512,16 @@ use assert_instr_macro::assert_instr;
 #[cfg(test)]
 #[allow(overflowing_literals)]
 mod test {
-    use std::arch::arm::*;
-    use crate::arm::*;
     #[cfg(target_arch = "aarch64")]
     use std::arch::aarch64::*;
+    #[cfg(target_arch = "arm")]
+    use std::arch::arm::*;
+    use crate::arm::*;
     #[cfg(target_arch = "aarch64")]
     use crate::aarch64::*;
     use std::mem::transmute;
     use simd_test_macro::simd_test;
-    use std::arch::simd::*;
+    use crate::arm::cmp_arm;
 "#,
     );
     //
@@ -512,7 +544,7 @@ mod test {
     use crate::aarch64::*;
     use std::mem::transmute;
     use simd_test_macro::simd_test;
-    use std::arch::simd::*;
+    use crate::arm::cmp_arm;
 "#,
     );
 

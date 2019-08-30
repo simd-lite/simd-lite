@@ -11,6 +11,10 @@ extern crate quote;
 use proc_macro2::{Ident, Literal, Span, TokenStream, TokenTree};
 use quote::ToTokens;
 use std::env;
+use std::sync::atomic::AtomicPtr;
+
+// See comment in `assert-instr-macro` crate for why this exists
+static _DONT_DEDUP: AtomicPtr<u8> = AtomicPtr::new(b"".as_ptr() as *mut _);
 
 fn string(s: &str) -> TokenTree {
     Literal::string(s).into()
@@ -126,7 +130,9 @@ pub fn simd_test(
                 #emms
                 return v;
             } else {
-                ::stdarch_test::assert_skip_test_ok(stringify!(#name));
+                if env::var("STDARCH_TEST_EVERYTHING").is_ok()() {
+                    panic!("skipped test `{}` when it shouldn't be skipped", name);
+                }
             }
 
             #[target_feature(enable = #enable_feature)]
