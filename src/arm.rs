@@ -1,12 +1,13 @@
 mod generated;
 use crate::simd_llvm::*;
-#[cfg(test)]
-use assert_instr_macro::assert_instr;
 pub use generated::*;
 use std::arch::aarch64::*;
 use std::hint::unreachable_unchecked;
 use std::mem::transmute;
 use std::ptr;
+
+#[cfg(test)]
+use assert_instr_macro::assert_instr;
 
 pub(crate) trait CMPArm {
     fn eq_arm(self, o: Self) -> bool;
@@ -176,6 +177,16 @@ pub unsafe fn vdupq_n_u8(value: u8) -> uint8x16_t {
 #[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(dup))]
 pub unsafe fn vmovq_n_u8(value: u8) -> uint8x16_t {
     vdupq_n_u8(value)
+}
+
+/// Duplicate vector element to vector or scalar
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(all(test, target_arch = "arm"), assert_instr(dup))]
+#[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(dup))]
+pub unsafe fn vmovq_n_s8(value: i8) -> int8x16_t {
+    vdupq_n_s8(value)
 }
 
 /// Vector reinterpret cast operation
