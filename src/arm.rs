@@ -1,5 +1,6 @@
 mod generated;
 use crate::simd_llvm::*;
+use crate::NeonInit;
 pub use generated::*;
 use std::arch::aarch64::*;
 use std::hint::unreachable_unchecked;
@@ -524,6 +525,13 @@ pub unsafe fn vld1q_s8(addr: *const i8) -> int8x16_t {
     ptr::read(addr as *const int8x16_t)
 }
 
+impl NeonInit for int8x16_t {
+    type From = [i8; 16];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_s8(&input as *const i8) }
+    }
+}
+
 /// Load multiple single-element structures to one, two, three, or four registers
 #[inline]
 #[target_feature(enable = "neon")]
@@ -535,7 +543,14 @@ pub unsafe fn vld1q_u8(addr: *const u8) -> uint8x16_t {
     ptr::read(addr as *const uint8x16_t)
 }
 
-/// Load multiple single-element structures to one, two, three, or four registers
+impl NeonInit for uint8x16_t {
+    type From = [u8; 16];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_u8(&input as *const u8) }
+    }
+}
+
+/// Compare bitwise test bits nonzero
 #[inline]
 #[target_feature(enable = "neon")]
 #[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
