@@ -33,9 +33,9 @@
     external_doc
 )]
 
-//#[cfg(target_arch = "aarch64")]
+#[cfg(target_arch = "aarch64")]
 pub mod aarch64;
-//#[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
+#[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
 pub mod arm;
 
 mod simd;
