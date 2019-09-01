@@ -509,7 +509,7 @@ mod test {
     use crate::aarch64::*;
     use std::mem::transmute;
     use simd_test_macro::simd_test;
-    use crate::arm::cmp_arm;
+    use crate::cmparm::cmp_arm;
 "#,
     );
     //
@@ -532,7 +532,7 @@ mod test {
     use crate::aarch64::*;
     use std::mem::transmute;
     use simd_test_macro::simd_test;
-    use crate::arm::cmp_arm;
+    use crate::cmparm::cmp_arm;
 "#,
     );
 

@@ -3,7 +3,7 @@
 mod generated;
 pub use crate::arm::*;
 pub use generated::*;
-use std::arch::aarch64::*;
+pub use std::arch::aarch64::*;
 use std::hint::unreachable_unchecked;
 use std::mem::transmute;
 use std::ptr;
@@ -61,7 +61,7 @@ pub unsafe fn vpaddq_u8(a: uint8x16_t, b: uint8x16_t) -> uint8x16_t {
 #[cfg(test)]
 mod tests {
     use crate::aarch64::*;
-    use crate::arm::cmp_arm;
+    use crate::cmparm::cmp_arm;
     use simd_test_macro::simd_test;
     use std::arch::aarch64::*;
     use std::mem::transmute;
@@ -99,8 +99,8 @@ pub(crate) mod neon {
     pub(crate) mod test_support;
     #[cfg(test)]
     mod tests;
-//    #[cfg(test)]
-//    #[cfg(target_endian = "little")]
-//    #[path = "../../arm/neon/table_lookup_tests.rs"]
-//    mod table_lookup_tests;
+    //    #[cfg(test)]
+    //    #[cfg(target_endian = "little")]
+    //    #[path = "../../arm/neon/table_lookup_tests.rs"]
+    //    mod table_lookup_tests;
 }

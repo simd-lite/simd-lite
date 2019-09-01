@@ -1,4 +1,3 @@
-
 use super::*;
 use crate::arm::neon::test_support::*;
 use crate::{arm::*, simd::*};

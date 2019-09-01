@@ -1,4 +1,3 @@
-
 use crate::aarch64::neon::test_support::*;
 use crate::arm::neon::test_support::*;
 use crate::{aarch64::neon::*, aarch64::*, simd::*};
