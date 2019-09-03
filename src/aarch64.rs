@@ -2,8 +2,9 @@
 
 mod generated;
 pub use crate::arm::*;
+use crate::NeonInit;
 pub use generated::*;
-use std::arch::aarch64::*;
+pub use std::arch::aarch64::*;
 use std::hint::unreachable_unchecked;
 use std::mem::transmute;
 use std::ptr;
@@ -58,10 +59,86 @@ pub unsafe fn vpaddq_u8(a: uint8x16_t, b: uint8x16_t) -> uint8x16_t {
     vpaddq_u8_(a, b)
 }
 
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_f64(addr: *const f64) -> float64x1_t {
+    ptr::read(addr as *const float64x1_t)
+}
+
+impl NeonInit for float64x1_t {
+    type Element = f64;
+    type From = [Self::Element; 1];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_f64(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1q_f64(addr: *const f64) -> float64x2_t {
+    ptr::read(addr as *const float64x2_t)
+}
+
+impl NeonInit for float64x2_t {
+    type Element = f64;
+    type From = [Self::Element; 2];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_f64(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_p64(addr: *const i64) -> poly64x1_t {
+    ptr::read(addr as *const poly64x1_t)
+}
+
+impl NeonInit for poly64x1_t {
+    type Element = i64;
+    type From = [Self::Element; 1];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_p64(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1q_p64(addr: *const i64) -> poly64x2_t {
+    ptr::read(addr as *const poly64x2_t)
+}
+
+impl NeonInit for poly64x2_t {
+    type Element = i64;
+    type From = [Self::Element; 2];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_p64(&input as *const Self::Element) }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::aarch64::*;
-    use crate::arm::cmp_arm;
+    use crate::cmparm::cmp_arm;
     use simd_test_macro::simd_test;
     use std::arch::aarch64::*;
     use std::mem::transmute;
@@ -99,8 +176,4 @@ pub(crate) mod neon {
     pub(crate) mod test_support;
     #[cfg(test)]
     mod tests;
-//    #[cfg(test)]
-//    #[cfg(target_endian = "little")]
-//    #[path = "../../arm/neon/table_lookup_tests.rs"]
-//    mod table_lookup_tests;
 }

@@ -38,11 +38,14 @@ pub mod aarch64;
 #[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
 pub mod arm;
 
-mod simd;
+#[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
+mod cmparm;
+
 mod simd_llvm;
 
 pub trait NeonInit {
     type From;
+    type Element;
     fn new(input: Self::From) -> Self;
 }
 

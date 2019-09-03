@@ -204,7 +204,7 @@ fn values(t: &str, vs: &[String]) -> String {
         format!(": {} = {}", t, vs[0])
     } else {
         format!(
-            ": {} = transmute([{}])",
+            " = {}::new([{}])",
             t,
             vs.iter()
                 .map(|v| map_val(type_to_global_type(t), v))
@@ -504,12 +504,14 @@ mod test {
     use std::arch::aarch64::*;
     #[cfg(target_arch = "arm")]
     use std::arch::arm::*;
+    #[cfg(target_arch = "arm")]
     use crate::arm::*;
     #[cfg(target_arch = "aarch64")]
     use crate::aarch64::*;
     use std::mem::transmute;
     use simd_test_macro::simd_test;
-    use crate::arm::cmp_arm;
+    use crate::cmparm::cmp_arm;
+    use crate::NeonInit;
 "#,
     );
     //
@@ -532,7 +534,8 @@ mod test {
     use crate::aarch64::*;
     use std::mem::transmute;
     use simd_test_macro::simd_test;
-    use crate::arm::cmp_arm;
+    use crate::cmparm::cmp_arm;
+    use crate::NeonInit;
 "#,
     );
 
