@@ -41,7 +41,6 @@ pub mod arm;
 #[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
 mod cmparm;
 
-mod simd;
 mod simd_llvm;
 
 pub trait NeonInit {

@@ -1,4 +1,5 @@
 mod generated;
+use crate::cmparm::cmp_arm;
 use crate::simd_llvm::*;
 use crate::NeonInit;
 pub use generated::*;
