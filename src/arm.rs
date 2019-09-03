@@ -468,14 +468,53 @@ pub unsafe fn vextq_u8(a: uint8x16_t, b: uint8x16_t, n: i32) -> uint8x16_t {
 #[cfg_attr(test, assert_instr(ldr))]
 // even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
 // #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_s8(addr: *const i8) -> int8x8_t {
+    ptr::read(addr as *const int8x8_t)
+}
+
+impl NeonInit for int8x8_t {
+    type Element = i8;
+    type From = [Self::Element; 8];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_s8(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_u8(addr: *const u8) -> uint8x8_t {
+    ptr::read(addr as *const uint8x8_t)
+}
+
+impl NeonInit for uint8x8_t {
+    type Element = u8;
+    type From = [Self::Element; 8];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_u8(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
 pub unsafe fn vld1q_s8(addr: *const i8) -> int8x16_t {
     ptr::read(addr as *const int8x16_t)
 }
 
 impl NeonInit for int8x16_t {
-    type From = [i8; 16];
+    type Element = i8;
+    type From = [Self::Element; 16];
     fn new(input: Self::From) -> Self {
-        unsafe { vld1q_s8(&input as *const i8) }
+        unsafe { vld1q_s8(&input as *const Self::Element) }
     }
 }
 
@@ -491,9 +530,276 @@ pub unsafe fn vld1q_u8(addr: *const u8) -> uint8x16_t {
 }
 
 impl NeonInit for uint8x16_t {
-    type From = [u8; 16];
+    type Element = u8;
+    type From = [Self::Element; 16];
     fn new(input: Self::From) -> Self {
-        unsafe { vld1q_u8(&input as *const u8) }
+        unsafe { vld1q_u8(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_s16(addr: *const i16) -> int16x4_t {
+    ptr::read(addr as *const int16x4_t)
+}
+
+impl NeonInit for int16x4_t {
+    type Element = i16;
+    type From = [Self::Element; 4];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_s16(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_u16(addr: *const u16) -> uint16x4_t {
+    ptr::read(addr as *const uint16x4_t)
+}
+
+impl NeonInit for uint16x4_t {
+    type Element = u16;
+    type From = [Self::Element; 4];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_u16(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1q_s16(addr: *const i16) -> int16x8_t {
+    ptr::read(addr as *const int16x8_t)
+}
+
+impl NeonInit for int16x8_t {
+    type Element = i16;
+    type From = [Self::Element; 8];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_s16(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1q_u16(addr: *const u16) -> uint16x8_t {
+    ptr::read(addr as *const uint16x8_t)
+}
+
+impl NeonInit for uint16x8_t {
+    type Element = u16;
+    type From = [Self::Element; 8];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_u16(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_s32(addr: *const i32) -> int32x2_t {
+    ptr::read(addr as *const int32x2_t)
+}
+
+impl NeonInit for int32x2_t {
+    type Element = i32;
+    type From = [Self::Element; 2];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_s32(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_u32(addr: *const u32) -> uint32x2_t {
+    ptr::read(addr as *const uint32x2_t)
+}
+
+impl NeonInit for uint32x2_t {
+    type Element = u32;
+    type From = [Self::Element; 2];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_u32(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1q_s32(addr: *const i32) -> int32x4_t {
+    ptr::read(addr as *const int32x4_t)
+}
+
+impl NeonInit for int32x4_t {
+    type Element = i32;
+    type From = [Self::Element; 4];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_s32(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1q_u32(addr: *const u32) -> uint32x4_t {
+    ptr::read(addr as *const uint32x4_t)
+}
+
+impl NeonInit for uint32x4_t {
+    type Element = u32;
+    type From = [Self::Element; 4];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_u32(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_s64(addr: *const i64) -> int64x1_t {
+    ptr::read(addr as *const int64x1_t)
+}
+
+impl NeonInit for int64x1_t {
+    type Element = i64;
+    type From = [Self::Element; 1];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_s64(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_u64(addr: *const u64) -> uint64x1_t {
+    ptr::read(addr as *const uint64x1_t)
+}
+
+impl NeonInit for uint64x1_t {
+    type Element = u64;
+    type From = [Self::Element; 1];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_u64(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1q_s64(addr: *const i64) -> int64x2_t {
+    ptr::read(addr as *const int64x2_t)
+}
+
+impl NeonInit for int64x2_t {
+    type Element = i64;
+    type From = [Self::Element; 2];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_s64(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1q_u64(addr: *const u64) -> uint64x2_t {
+    ptr::read(addr as *const uint64x2_t)
+}
+
+impl NeonInit for uint64x2_t {
+    type Element = u64;
+    type From = [Self::Element; 2];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_u64(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1_f32(addr: *const f32) -> float32x2_t {
+    ptr::read(addr as *const float32x2_t)
+}
+
+impl NeonInit for float32x2_t {
+    type Element = f32;
+    type From = [Self::Element; 2];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1_f32(&input as *const Self::Element) }
+    }
+}
+
+/// Load multiple single-element structures to one, two, three, or four registers
+#[inline]
+#[target_feature(enable = "neon")]
+#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
+#[cfg_attr(test, assert_instr(ldr))]
+// even gcc compiles this to ldr: https://clang.godbolt.org/z/1bvH2x
+// #[cfg_attr(test, assert_instr(ld1))]
+pub unsafe fn vld1q_f32(addr: *const f32) -> float32x4_t {
+    ptr::read(addr as *const float32x4_t)
+}
+
+impl NeonInit for float32x4_t {
+    type Element = f32;
+    type From = [Self::Element; 4];
+    fn new(input: Self::From) -> Self {
+        unsafe { vld1q_f32(&input as *const Self::Element) }
     }
 }
 
@@ -512,6 +818,7 @@ pub unsafe fn vtstq_u8(a: uint8x16_t, b: uint8x16_t) -> uint8x16_t {
 mod tests {
     #[cfg(target_arch = "aarch64")]
     use crate::aarch64::*;
+    #[cfg(target_arch = "arm")]
     use crate::arm::*;
     use crate::cmparm::cmp_arm;
     use simd_test_macro::simd_test;

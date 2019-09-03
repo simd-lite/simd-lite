@@ -46,6 +46,7 @@ mod simd_llvm;
 
 pub trait NeonInit {
     type From;
+    type Element;
     fn new(input: Self::From) -> Self;
 }
 
