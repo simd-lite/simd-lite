@@ -674,8 +674,4 @@ pub(crate) mod neon {
     pub(crate) mod test_support;
     #[cfg(test)]
     mod tests;
-    //    #[cfg(test)]
-    //    #[cfg(target_endian = "little")]
-    //    #[path = "../../arm/neon/table_lookup_tests.rs"]
-    //    mod table_lookup_tests;
 }
