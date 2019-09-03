@@ -9,5 +9,5 @@ edition = "2018"
 [dependencies]
 
 [dev-dependencies]
-simd-test-macro = {path = "simd-test-macro"}
-assert-instr-macro = {path = "assert-instr-macro"}
+simd-test-macro = "^0.1"
+assert-instr-macro = "^0.1"
