@@ -1,11 +1,13 @@
+use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, BufReader};
+use std::path::PathBuf;
 use std::process::Command;
 
 const IN: &str = "neon.spec";
-const ARM_OUT: &str = "src/arm/generated.rs";
-const AARCH64_OUT: &str = "src/aarch64/generated.rs";
+const ARM_OUT: &str = "arm_generated.rs";
+const AARCH64_OUT: &str = "aarch64_generated.rs";
 
 const UINT_TYPES: [&str; 6] = [
     "uint8x8_t",
@@ -642,11 +644,14 @@ mod test {
     tests_aarch64.push('}');
     tests_aarch64.push('\n');
 
-    let mut file_arm = File::create(ARM_OUT)?;
+    let out_path: PathBuf = PathBuf::from(env::var("OUT_DIR").unwrap());
+    println!("{:?}", out_path);
+
+    let mut file_arm = File::create(out_path.join(ARM_OUT))?;
     file_arm.write_all(out_arm.as_bytes())?;
     file_arm.write_all(tests_arm.as_bytes())?;
 
-    let mut file_aarch = File::create(AARCH64_OUT)?;
+    let mut file_aarch = File::create(out_path.join(AARCH64_OUT))?;
     file_aarch.write_all(out_aarch64.as_bytes())?;
     file_aarch.write_all(tests_aarch64.as_bytes())?;
     Command::new("rustfmt")

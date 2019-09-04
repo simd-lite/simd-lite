@@ -34,7 +34,11 @@
 )]
 
 #[cfg(target_arch = "aarch64")]
+include!(concat!(env!("OUT_DIR"), "/aarch64_generated.rs"));
+#[cfg(target_arch = "aarch64")]
 pub mod aarch64;
+#[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
+include!(concat!(env!("OUT_DIR"), "/arm_generated.rs"));
 #[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
 pub mod arm;
 
