@@ -11,6 +11,6 @@ repository = "https://github.com/simd-lite/simd-lite"
 
 [dependencies]
 
-[dev-dependencies]
-simd-test-macro = {path = "simd-test-macro"}
-assert-instr-macro = {path = "assert-instr-macro"}
+#[dev-dependencies]
+#simd-test-macro = {path = "simd-test-macro"}
+#assert-instr-macro = {path = "assert-instr-macro"}
