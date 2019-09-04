@@ -1,11 +1,13 @@
+use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, BufReader};
+use std::path::PathBuf;
 use std::process::Command;
 
 const IN: &str = "neon.spec";
-const ARM_OUT: &str = "src/arm/generated.rs";
-const AARCH64_OUT: &str = "src/aarch64/generated.rs";
+const ARM_OUT: &str = "generated.rs";
+const AARCH64_OUT: &str = "generated.rs";
 
 const UINT_TYPES: [&str; 6] = [
     "uint8x8_t",
@@ -296,8 +298,8 @@ fn gen_aarch64(
     out_t: &str,
     current_tests: &[(Vec<String>, Vec<String>, Vec<String>)],
 ) -> (String, String) {
-    let globla_t = type_to_global_type(in_t);
-    let globla_ret_t = type_to_global_type(out_t);
+    let _global_t = type_to_global_type(in_t);
+    let _global_ret_t = type_to_global_type(out_t);
     let current_fn = if let Some(current_fn) = current_fn.clone() {
         if link_aarch64.is_some() {
             panic!("[{}] Can't specify link and fn at the same time.", name)
@@ -399,8 +401,8 @@ fn gen_arm(
     out_t: &str,
     current_tests: &[(Vec<String>, Vec<String>, Vec<String>)],
 ) -> (String, String) {
-    let globla_t = type_to_global_type(in_t);
-    let globla_ret_t = type_to_global_type(out_t);
+    let _global_t = type_to_global_type(in_t);
+    let _global_ret_t = type_to_global_type(out_t);
     let current_aarch64 = current_aarch64
         .clone()
         .unwrap_or_else(|| current_arm.to_string());
@@ -642,16 +644,26 @@ mod test {
     tests_aarch64.push('}');
     tests_aarch64.push('\n');
 
-    let mut file_arm = File::create(ARM_OUT)?;
+    let arm_out_path: PathBuf = PathBuf::from(env::var("OUT_DIR").unwrap())
+        .join("src")
+        .join("arm");
+    std::fs::create_dir_all(&arm_out_path)?;
+
+    let mut file_arm = File::create(arm_out_path.join(ARM_OUT))?;
     file_arm.write_all(out_arm.as_bytes())?;
     file_arm.write_all(tests_arm.as_bytes())?;
 
-    let mut file_aarch = File::create(AARCH64_OUT)?;
+    let aarch64_out_path: PathBuf = PathBuf::from(env::var("OUT_DIR").unwrap())
+        .join("src")
+        .join("aarch64");
+    std::fs::create_dir_all(&aarch64_out_path)?;
+
+    let mut file_aarch = File::create(aarch64_out_path.join(AARCH64_OUT))?;
     file_aarch.write_all(out_aarch64.as_bytes())?;
     file_aarch.write_all(tests_aarch64.as_bytes())?;
     Command::new("rustfmt")
-        .arg(ARM_OUT)
-        .arg(AARCH64_OUT)
+        .arg(&arm_out_path)
+        .arg(&aarch64_out_path)
         .status()
         .expect("failed to execute process");
     Ok(())
