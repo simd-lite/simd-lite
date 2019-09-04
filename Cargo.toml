@@ -3,11 +3,14 @@ name = "simd-lite"
 version = "0.1.0"
 authors = ["Sunny Gleason", "Heinz N. Gies <heinz@licenser.net>"]
 edition = "2018"
+license = "Apache-2.0/MIT"
+description = "Helpful functionality for working with SIMD intrinsics in Rust"
+repository = "https://github.com/simd-lite/simd-lite"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 
 [dev-dependencies]
-simd-test-macro = "^0.1"
-assert-instr-macro = "^0.1"
+#simd-test-macro = "^0.1"
+#assert-instr-macro = "^0.1"
