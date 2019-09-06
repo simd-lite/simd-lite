@@ -10,10 +10,12 @@ steps:
   environment:
     RUSTFLAGS: '-C target-cpu=native'
   commands:
+  - rustup default stable
+  - rustup component add rustfmt
+  - rustup update
+  - cargo fmt --all -- --check
   - rustup default nightly
   - rustup update
-  - rustup component add rustfmt
-  - cargo fmt --all -- --check
   - cargo build --verbose --all
   - cargo test --verbose --all
 ---
@@ -30,10 +32,12 @@ steps:
   environment:
     RUSTFLAGS: '-C target-cpu=native -C target-feature=-avx2'
   commands:
+  - rustup default stable
+  - rustup component add rustfmt
+  - rustup update
+  - cargo fmt --all -- --check
   - rustup default nightly
   - rustup update
-  - rustup component add rustfmt
-  - cargo fmt --all -- --check
   - cargo build --verbose --all
   - cargo test --verbose --all
 
@@ -51,10 +55,12 @@ steps:
   environment:
     RUSTFLAGS: '-C target-cpu=native -C target-feature=-avx2,-sse4.2'
   commands:
+  - rustup default stable
+  - rustup component add rustfmt
+  - rustup update
+  - cargo fmt --all -- --check
   - rustup default nightly
   - rustup update
-  - rustup component add rustfmt
-  - cargo fmt --all -- --check
   - cargo build --verbose --all
   - cargo test --verbose --all
 
@@ -72,5 +78,5 @@ steps:
   commands:
   - rustup default nightly
   - rustup update
-  - cargo clean && cargo +nightly build --verbose --all --features neon
-  - cargo +nightly test --verbose --all --features neon
+  - cargo clean && cargo +nightly build --verbose --all
+  - cargo +nightly test --verbose --all
