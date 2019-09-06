@@ -8,6 +8,7 @@ commands:
     description: "A very simple command for demonstration purposes"
     steps:     
       - checkout
+        #
         # - run:
         #   name: Install CMAKE
         #   command: 'apt-get update && apt-get install -y cmake'
@@ -24,6 +25,7 @@ commands:
         # - run:
         #   name: install newer CMAKE ...
         #   command: 'cd cmake-3.14.1 && make install'
+        #
       - run:
           name: Install rustfmt
           command: rustup component add rustfmt
