@@ -77,15 +77,6 @@ pub unsafe fn vand_u8(a: uint8x8_t, b: uint8x8_t) -> uint8x8_t {
     simd_and(a, b)
 }
 
-/// Vector bitwise and
-#[inline]
-#[target_feature(enable = "neon")]
-#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
-#[cfg_attr(all(test, target_arch = "arm"), assert_instr(vand))]
-#[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(and))]
-pub unsafe fn vandq_u8(a: uint8x16_t, b: uint8x16_t) -> uint8x16_t {
-    simd_and(a, b)
-}
 
 /// Vector bitwise and
 #[inline]
@@ -114,16 +105,6 @@ pub unsafe fn vandq_u16(a: uint16x8_t, b: uint16x8_t) -> uint16x8_t {
 #[cfg_attr(all(test, target_arch = "arm"), assert_instr(vand))]
 #[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(and))]
 pub unsafe fn vand_u32(a: uint32x2_t, b: uint32x2_t) -> uint32x2_t {
-    simd_and(a, b)
-}
-
-/// Vector bitwise and
-#[inline]
-#[target_feature(enable = "neon")]
-#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
-#[cfg_attr(all(test, target_arch = "arm"), assert_instr(vand))]
-#[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(and))]
-pub unsafe fn vandq_u32(a: uint32x4_t, b: uint32x4_t) -> uint32x4_t {
     simd_and(a, b)
 }
 
@@ -694,16 +675,6 @@ pub unsafe fn vcgtq_s32(a: int32x4_t, b: int32x4_t) -> uint32x4_t {
 #[cfg_attr(all(test, target_arch = "arm"), assert_instr(cmhi))]
 #[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(cmhi))]
 pub unsafe fn vcgt_u8(a: uint8x8_t, b: uint8x8_t) -> uint8x8_t {
-    simd_gt(a, b)
-}
-
-/// Compare unsigned highe
-#[inline]
-#[target_feature(enable = "neon")]
-#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
-#[cfg_attr(all(test, target_arch = "arm"), assert_instr(cmhi))]
-#[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(cmhi))]
-pub unsafe fn vcgtq_u8(a: uint8x16_t, b: uint8x16_t) -> uint8x16_t {
     simd_gt(a, b)
 }
 

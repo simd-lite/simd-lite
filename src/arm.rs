@@ -116,19 +116,6 @@ pub unsafe fn vget_lane_u8(v: uint8x8_t, imm5: i32) -> u8 {
 #[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
 #[cfg_attr(all(test, target_arch = "arm"), assert_instr(dup))]
 #[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(dup))]
-pub unsafe fn vdupq_n_s8(value: i8) -> int8x16_t {
-    transmute([
-        value, value, value, value, value, value, value, value, value, value, value, value, value,
-        value, value, value,
-    ])
-}
-
-/// Duplicate vector element to vector or scalar
-#[inline]
-#[target_feature(enable = "neon")]
-#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
-#[cfg_attr(all(test, target_arch = "arm"), assert_instr(dup))]
-#[cfg_attr(all(test, target_arch = "aarch64"), assert_instr(dup))]
 pub unsafe fn vdupq_n_u8(value: u8) -> uint8x16_t {
     transmute([
         value, value, value, value, value, value, value, value, value, value, value, value, value,
@@ -170,15 +157,6 @@ pub unsafe fn vreinterpret_u64_u32(a: uint32x2_t) -> uint64x1_t {
 #[target_feature(enable = "neon")]
 #[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
 #[cfg_attr(test, assert_instr(nop))]
-pub unsafe fn vreinterpretq_s8_u8(a: uint8x16_t) -> int8x16_t {
-    transmute(a)
-}
-
-/// Vector reinterpret cast operation
-#[inline]
-#[target_feature(enable = "neon")]
-#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
-#[cfg_attr(test, assert_instr(nop))]
 pub unsafe fn vreinterpretq_u16_u8(a: uint8x16_t) -> uint16x8_t {
     transmute(a)
 }
@@ -201,35 +179,6 @@ pub unsafe fn vreinterpretq_u64_u8(a: uint8x16_t) -> uint64x2_t {
     transmute(a)
 }
 
-/// Vector reinterpret cast operation
-#[inline]
-#[target_feature(enable = "neon")]
-#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
-#[cfg_attr(test, assert_instr(nop))]
-pub unsafe fn vreinterpretq_u8_s8(a: int8x16_t) -> uint8x16_t {
-    transmute(a)
-}
-
-/// Unsigned shift right
-#[inline]
-#[target_feature(enable = "neon")]
-#[cfg_attr(target_arch = "arm", target_feature(enable = "v7"))]
-#[cfg_attr(test, assert_instr(ushr, imm3 = 1))]
-#[rustc_args_required_const(1)]
-pub unsafe fn vshrq_n_u8(a: uint8x16_t, imm3: i32) -> uint8x16_t {
-    if imm3 < 0 || imm3 > 7 {
-        unreachable_unchecked();
-    } else {
-        let imm3 = (imm3 & 0b111) as u8;
-        simd_shr(
-            a,
-            transmute([
-                imm3, imm3, imm3, imm3, imm3, imm3, imm3, imm3, imm3, imm3, imm3, imm3, imm3, imm3,
-                imm3, imm3,
-            ]),
-        )
-    }
-}
 
 /// Shift right
 #[inline]
@@ -949,17 +898,6 @@ mod tests {
             ];
             let e: [u8; 16] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
             let r = vextq_s8(transmute(a), transmute(b), 3);
-            assert!(cmp_arm(r, transmute(e)));
-        }
-    }
-
-    //#[simd_test(enable = "neon")]
-    #[test]
-    fn test_vshrq_n_u8() {
-        unsafe {
-            let a: [u8; 16] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-            let e: [u8; 16] = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4];
-            let r = vshrq_n_u8(transmute(a), 2);
             assert!(cmp_arm(r, transmute(e)));
         }
     }
